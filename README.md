@@ -5,7 +5,7 @@ Smart Signal Traffic System is a web-based application designed to integrate wit
 
 ---
 
-## 🧩 Features
+## Features
 
 ### Admin Functionalities
 - Add, show, and delete clients
@@ -21,7 +21,7 @@ Smart Signal Traffic System is a web-based application designed to integrate wit
 
 ---
 
-## 🛠 Installation Guide
+##  Installation Guide
 
 ### Prerequisites
 - Python 3.x
@@ -32,7 +32,7 @@ Smart Signal Traffic System is a web-based application designed to integrate wit
 
 ---
 
-## 🔧 Setup Instructions
+##  Setup Instructions
 
 ### 1. Create Virtual Environment
 
@@ -77,7 +77,7 @@ aws configure
 
 ---
 
-## ☁ AWS S3 Setup
+##  AWS S3 Setup
 
 1. Admin must manually create a bucket per client:  
    Format: `ecube-eis/<company_name>/<site_name>`
@@ -90,7 +90,7 @@ aws configure
 
 ---
 
-## 🗺 Map Integration
+##  Map Integration
 
 1. Use [Google Maps Custom Map Tool](https://www.howtogeek.com/664890/how-to-create-a-custom-map-in-google-maps/)
 2. Save static map image at:
@@ -103,7 +103,7 @@ aws configure
 
 ---
 
-## 💼 Project Structure
+##  Project Structure
 
 ```
 smart_signal/
@@ -122,7 +122,7 @@ smart_signal/
 
 ---
 
-## 📊 AWS Pricing Overview
+##  AWS Pricing Overview
 
 | Service       | Estimated Cost        |
 |---------------|------------------------|
@@ -132,13 +132,13 @@ smart_signal/
 
 ---
 
-## 🏢 Developed By
+##  Developed By
 
 **Ecube Solutions**  
 For queries, contact: `ecubesolutions99@gmail.com`
 
 ---
 
-## 📜 License
+##  License
 
 This project is proprietary and developed for Smart Signal systems under Ecube Solutions. All rights reserved.
