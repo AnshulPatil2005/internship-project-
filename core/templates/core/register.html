@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Register New User{% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register New User</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-color: #2c3e50;
+      --input-bg: #ffffff;
+      --input-border: #ccc;
+      --primary-color: #007bff;
+      --primary-hover: #0056b3;
+      --error-color: #dc3545;
+    }
+
+    body.dark {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --text-color: #f0f0f0;
+      --input-bg: #2a2a2a;
+      --input-border: #555;
+      --primary-color: #3399ff;
+      --primary-hover: #227acc;
+      --error-color: #ff6b6b;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 40px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      color: var(--text-color);
+    }
+
+    .register-container {
+      max-width: 500px;
+      margin: auto;
+      background-color: var(--card-bg);
+      padding: 35px 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      transition: background-color 0.3s ease;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--primary-color);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    form label {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    input {
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid var(--input-border);
+      border-radius: 6px;
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    input:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+
+    button {
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .errorlist {
+      color: var(--error-color);
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .mode-toggle {
+      display: flex;
+      justify-content: flex-end;
+      max-width: 500px;
+      margin: 10px auto 0;
+      padding: 0 10px;
+    }
+
+    .mode-toggle button {
+      padding: 6px 12px;
+      border: 2px solid var(--primary-color);
+      background-color: transparent;
+      color: var(--primary-color);
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .mode-toggle button:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    @media (max-width: 600px) {
+      .register-container {
+        padding: 30px 20px;
+      }
+
+      .mode-toggle {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- <div class="mode-toggle">
+    <button onclick="toggleMode()">🌓 Toggle Mode</button>
+  </div> -->
+
+  <div class="register-container">
+    <h2>Register New User</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Register</button>
+    </form>
+  </div>
+
+  <script>
+    function toggleMode() {
+      document.body.classList.toggle("dark");
+      localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+    }
+
+    window.onload = () => {
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
+      }
+    };
+  </script>
+</body>
+</html>
+{% endblock %}

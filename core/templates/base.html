@@ -1,0 +1,263 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}Smart Signal System{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --fg: #222;
+      --accent: #007bff;
+      --accent-hover: #0056b3;
+      --dark-bg: #121212;
+      --dark-fg: #f0f0f0;
+      --container: rgba(255, 255, 255, 0.9);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      padding-left: 240px;
+      transition: background 0.3s ease;
+    }
+
+    body.dark {
+      --bg: var(--dark-bg);
+      --fg: var(--dark-fg);
+      --container: rgba(30, 30, 30, 0.92);
+      --accent: #1a73e8;
+      --accent-hover: #135abe;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 240px;
+      height: 100%;
+      background: #222;
+      color: white;
+      padding-top: 15px;
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar input {
+      width: 80%;
+      margin: 10px auto;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #999;
+      display: block;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 12px 20px;
+      text-decoration: none;
+      color: white;
+      transition: background 0.2s;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background: var(--accent);
+    }
+
+    .traffic-light {
+      width: 50px;
+      margin: 0 auto 20px;
+      background: #111;
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    .traffic-light .light {
+      width: 30px;
+      height: 30px;
+      margin: 10px auto;
+      border-radius: 50%;
+      opacity: 0.4;
+      transition: opacity 0.3s ease;
+    }
+
+    .traffic-light .red { background: red; }
+    .traffic-light .yellow { background: gold; }
+    .traffic-light .green { background: #00cc44; }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 30px;
+      background: var(--container);
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .breadcrumb {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 20px;
+    }
+
+    .mode-toggle {
+      position: fixed;
+      top: 15px;
+      right: 20px;
+      z-index: 100;
+    }
+
+    .mode-toggle button,
+    .back-top {
+      background: none;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .mode-toggle button:hover,
+    .back-top:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    .back-top {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 100;
+    }
+
+    #toast {
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--accent);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      z-index: 999;
+    }
+
+    #loader {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.6);
+      z-index: 1000;
+    }
+
+    #loader div {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    @media (max-width: 768px) {
+      body { padding-left: 0; }
+      .sidebar { width: 100%; position: static; display: flex; flex-wrap: wrap; }
+      .sidebar a { flex: 1 0 45%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 🌗 Toggle Button -->
+  <div class="mode-toggle">
+    <button onclick="toggleMode()">🌙 Dark Mode</button>
+  </div>
+
+  <!-- 🚦 Sidebar with Signal -->
+  <div class="sidebar">
+    <div class="traffic-light">
+      <div class="light red"></div>
+      <div class="light yellow"></div>
+      <div class="light green"></div>
+    </div>
+
+    <input type="text" placeholder="Search..." onkeyup="filterSidebar(this)" />
+    <ul>
+      <li><a href="{% url 'add_client' %}" class="{% if request.path == '/add-client/' %}active{% endif %}">➕ Add Client</a></li>
+      <li><a href="{% url 'list_clients' %}">📋 Clients</a></li>
+      <li><a href="{% url 'register' %}">🧾 Register User</a></li>
+      <li><a href="{% url 'show_signals' %}">🚦 Signals</a></li>
+      <li><a href="{% url 'upload_video' %}">📤 Upload Video</a></li>
+      <li><a href="{% url 'show_map' %}">🗺️ View Map</a></li>
+      <li><a href="{% url 'list_videos' %}">🎥 All Videos</a></li>
+    </ul>
+  </div>
+
+  <!-- 📦 Main Content -->
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="/">🏠 Home</a> / {% block breadcrumb %}Dashboard{% endblock %}
+    </div>
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- ⬆️ Scroll + Toast + Loader -->
+  <button class="back-top" onclick="scrollToTop()">↑</button>
+  <div id="toast">Success!</div>
+  <div id="loader"><div>⏳ Loading...</div></div>
+
+  <script>
+    function toggleMode() {
+      const body = document.body;
+      const toggle = document.querySelector('.mode-toggle button');
+      body.classList.toggle('dark');
+      const isDark = body.classList.contains('dark');
+      toggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => toast.style.display = 'none', 3000);
+    }
+
+    function filterSidebar(input) {
+      const value = input.value.toLowerCase();
+      document.querySelectorAll('.sidebar a').forEach(a => {
+        a.style.display = a.textContent.toLowerCase().includes(value) ? '' : 'none';
+      });
+    }
+
+    // 🌈 Animated Signal Light
+    (function cycleTrafficLight() {
+      const lights = document.querySelectorAll('.traffic-light .light');
+      let index = 0;
+      setInterval(() => {
+        lights.forEach((l, i) => l.style.opacity = i === index ? '1' : '0.4');
+        index = (index + 1) % 3;
+      }, 1000);
+    })();
+
+    window.onload = () => {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+        document.querySelector('.mode-toggle button').textContent = '☀️ Light Mode';
+      }
+    };
+  </script>
+</body>
+</html>

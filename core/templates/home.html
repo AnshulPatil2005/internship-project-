@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Smart Signal Home{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 30px 0;">
+  <h1 style="font-size: 32px; margin-bottom: 10px; color: var(--text-color);">🚦 Welcome Admin</h1>
+
+  <p style="color: var(--text-color); font-size: 16px;">
+    Monitor and manage smart traffic systems with <strong style="color: #007bff;">Ecube Solutions</strong>
+  </p>
+
+  <p style="font-size: 14px; color: var(--text-color); opacity: 0.7;">
+    Logged in as: <strong>{{ request.user.username }}</strong>
+  </p>
+</div>
+
+<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; max-width: 1000px; margin: auto; padding-bottom: 40px;">
+  <div style="flex: 1 0 200px; background: var(--card-bg); border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 20px;">
+    <h3 style="color: var(--text-color);">👥 Clients</h3>
+    <p style="font-size: 24px; font-weight: bold; color: var(--text-color);">{{ total_clients|default_if_none:"0" }}</p>
+  </div>
+  <div style="flex: 1 0 200px; background: var(--card-bg); border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 20px;">
+    <h3 style="color: var(--text-color);">🎥 Videos</h3>
+    <p style="font-size: 24px; font-weight: bold; color: var(--text-color);">{{ total_videos|default_if_none:"0" }}</p>
+  </div>
+  <div style="flex: 1 0 200px; background: var(--card-bg); border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 20px;">
+    <h3 style="color: var(--text-color);">🚦 Signals</h3>
+    <p style="font-size: 24px; font-weight: bold; color: var(--text-color);">
+      {% if active_signals %}{{ active_signals }} Active{% else %}0 Active{% endif %}
+    </p>
+  </div>
+  <div style="flex: 1 0 200px; background: var(--card-bg); border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 20px;">
+    <h3 style="color: var(--text-color);">⚠️ Alerts</h3>
+    <p style="font-size: 24px; font-weight: bold; color: red;">
+      {% if alert_count %}{{ alert_count }}{% else %}0{% endif %}
+    </p>
+  </div>
+</div>
+
+<div style="text-align: center; margin-top: 20px;">
+  <a href="{% url 'add_client' %}" style="display:inline-block; background:#007bff; color:white; padding:10px 20px; border-radius:6px; text-decoration:none;">
+    ➕ Add New Client
+  </a>
+</div>
+
+<footer style="text-align:center; padding: 30px 0 10px; font-size: 14px; color: var(--text-color); opacity: 0.5;">
+  🚀 Powered by <strong style="color:#007bff;">Ecube Solutions</strong>
+</footer>
+{% endblock %}

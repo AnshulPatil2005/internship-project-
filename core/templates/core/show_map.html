@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Smart Signal Map{% endblock %}
+{% block content %}
+
+<style>
+  :root {
+    --bg-color: #f4f6f8;
+    --card-bg: #ffffff;
+    --text-color: #2c3e50;
+    --form-bg: #ffffff;
+    --input-border: #ccc;
+    --button-bg: #007bff;
+    --button-hover: #0056b3;
+  }
+
+  body.dark {
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --text-color: #e0e0e0;
+    --form-bg: #2a2a2a;
+    --input-border: #444;
+    --button-bg: #1a73e8;
+    --button-hover: #1558b0;
+  }
+
+  body {
+    background-color: var(--bg-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+  }
+
+  .map-container {
+    width: 100%;
+    padding: 40px 50px;
+    background-color: var(--bg-color);
+    box-sizing: border-box;
+  }
+
+  .map-box {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    padding: 40px;
+    max-width: 100%;
+    margin: auto;
+  }
+
+  .map-container h2 {
+    text-align: center;
+    color: var(--button-bg);
+    margin-bottom: 30px;
+    font-size: 28px;
+  }
+
+  form {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+
+  label {
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 16px;
+  }
+
+  select {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--input-border);
+    margin-right: 10px;
+    background-color: var(--form-bg);
+    color: var(--text-color);
+    font-size: 15px;
+  }
+
+  button {
+    padding: 10px 18px;
+    background-color: var(--button-bg);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: var(--button-hover);
+  }
+
+  .map-label {
+    text-align: center;
+    font-size: 20px;
+    margin-top: 25px;
+    color: var(--text-color);
+  }
+
+  .map-wrapper {
+    position: relative;
+    margin: 40px auto 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--input-border);
+    overflow: hidden;
+  }
+
+  .map-image {
+    width: 100%;
+    max-height: 800px;
+    object-fit: contain;
+    display: block;
+    border-radius: 10px;
+    filter: brightness(0.85) contrast(1.1);
+  }
+
+  body.dark .map-image {
+    filter: brightness(0.6) contrast(1.2) grayscale(0.2);
+  }
+
+  .map-marker {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+  }
+
+  .map-marker img {
+    width: 24px;
+    height: 24px;
+  }
+
+  @media (max-width: 768px) {
+    .map-box {
+      padding: 20px;
+    }
+
+    .map-image {
+      max-height: 500px;
+    }
+  }
+</style>
+
+<div class="map-container">
+  <div class="map-box">
+    <h2>Smart Signal Traffic System</h2>
+
+    <form method="get" action="{% url 'show_map' %}">
+      <label for="client_map">Choose Client Map:</label>
+      <select name="client_map" id="client_map" required>
+        <option value="">-- Select Map --</option>
+        <option value="gpds_map.png" {% if selected_map == "gpds_map.png" %}selected{% endif %}>gpds_map.png</option>
+        <option value="ecube_map.png" {% if selected_map == "ecube_map.png" %}selected{% endif %}>ecube_map.png</option>
+      </select>
+      <button type="submit">Show Map</button>
+    </form>
+
+    {% if selected_map %}
+      <div class="map-label">Map for: <strong>{{ selected_map }}</strong></div>
+      <div class="map-wrapper">
+        <img src="{% static 'images/maps/'|add:selected_map %}" alt="Map Image" class="map-image">
+
+        {% if selected_map == "ecube_map.png" %}
+          <!-- Marker for Mumbai -->
+          <a href="https://maps.app.goo.gl/KFkTnV6mkGUNJuFH8" class="map-marker" style="top: 50%; left: 58%;" title="Client 1 – Mumbai">
+            <img src="{% static 'images/icons/signal.svg' %}" alt="Signal Marker">
+          </a>
+
+        {% elif selected_map == "gpds_map.png" %}
+          <!-- Marker for Pune -->
+          <a href="https://maps.app.goo.gl/SHrAM1CPuYA19zE89" class="map-marker" style="top: 50%; left: 65%;" title="Client 2 – Pune">
+            <img src="{% static 'images/icons/signal.svg' %}" alt="Signal Marker">
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  // Ensure dark mode is applied on load from localStorage
+  window.onload = () => {
+    const theme = localStorage.getItem("theme");
+    if (theme === "dark") {
+      document.body.classList.add("dark");
+    }
+  };
+</script>
+
+{% endblock %}

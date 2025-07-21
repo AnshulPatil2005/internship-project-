@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Video List{% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg-color: #ecf0f1;
+      --card-bg: #ffffff;
+      --text-color: #2c3e50;
+      --input-bg: #ffffff;
+      --input-border: #ccc;
+      --button-bg: #2c3e50;
+      --button-hover: #1a252f;
+    }
+
+    body.dark {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --text-color: #f0f0f0;
+      --input-bg: #2a2a2a;
+      --input-border: #444;
+      --button-bg: #007bff;
+      --button-hover: #0056b3;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-container {
+      background-color: var(--card-bg);
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      color: var(--text-color);
+      transition: background-color 0.3s ease, color 0.3s ease;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--text-color);
+    }
+
+    form p {
+      margin-bottom: 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid var(--input-border);
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    button {
+      width: 100%;
+      background-color: var(--button-bg);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: var(--button-hover);
+    }
+
+    .errorlist {
+      color: red;
+      font-size: 14px;
+    }
+
+    .mode-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    .mode-toggle button {
+      padding: 6px 12px;
+      border: 2px solid var(--button-bg);
+      background-color: transparent;
+      color: var(--button-bg);
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .mode-toggle button:hover {
+      background-color: var(--button-bg);
+      color: white;
+    }
+
+    @media (max-width: 500px) {
+      .login-container {
+        padding: 25px 20px;
+      }
+
+      .mode-toggle {
+        position: static;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- <div class="mode-toggle">
+    <button onclick="toggleMode()">🌗 Toggle Mode</button>
+  </div> -->
+
+  <div class="login-container">
+    <h2>Login</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <script>
+    function toggleMode() {
+      document.body.classList.toggle("dark");
+      localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+    }
+
+    window.onload = () => {
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
+      }
+    };
+  </script>
+</body>
+</html>
+{% endblock %}
