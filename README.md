@@ -120,25 +120,6 @@ smart_signal/
 └── requirements.txt
 ```
 
----
-
-##  AWS Pricing Overview
-
-| Service       | Estimated Cost        |
-|---------------|------------------------|
-| EC2 (t2.micro) | ₹744/month (~₹8900/year) |
-| S3 (1TB storage) | ₹1840/month + ₹800 for 100GB outbound |
-| **Total**      | **~₹2700/month (~₹32,400/year)** |
-
----
-
-##  Developed By
-
-**Ecube Solutions**  
-For queries, contact: `ecubesolutions99@gmail.com`
-
----
-
 ##  License
 
 This project is proprietary and developed for Smart Signal systems under Ecube Solutions. All rights reserved.
