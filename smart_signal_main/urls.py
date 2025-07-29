@@ -1,3 +1,7 @@
+# smart_signal_main/urls.py
+# This file contains the URL patterns for the Django application.
+# It includes the admin interface and the core application URLs.
+# Ensure to import necessary modules from Django.   
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings

@@ -1,5 +1,11 @@
 # core/utils.py
-
+#contains all the utility to automate the process of uploading videos to AWS S3
+# This file contains utility functions for handling video uploads to AWS S3.
+# It includes functions to list videos from S3 and delete client data from S3.      
+# Ensure to import necessary modules from Django and boto3.
+#this is not currently in use as there is no AWS S3 bucket configured
+from django.conf import settings
+import os
 import boto3
 from django.conf import settings
 

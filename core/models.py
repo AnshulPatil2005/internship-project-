@@ -1,3 +1,8 @@
+#contains all the models used for the forms used in the application
+# core/models.py
+# This file contains the models for user, client, and video.
+# It defines the structure of the database tables and their relationships.
+# Ensure to import necessary modules from Django.
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 

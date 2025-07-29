@@ -1,3 +1,5 @@
+# smart_signal_main/settings.py
+# This file contains the settings for the Django application.   
 from pathlib import Path
 import os
 

@@ -1,3 +1,9 @@
+#contains URL patterns for the core application
+# core/urls.py
+# This file contains URL patterns for user authentication, client management, and video handling.
+# It maps URLs to views and includes necessary static file handling.
+#the tempelate name here points to the login template in the html directory
+# Ensure to import necessary views and settings from Django.
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static

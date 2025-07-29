@@ -1,3 +1,7 @@
+# core/views.py
+# This file contains views for user authentication, client management, and video handling
+#this file cntains all the functions that handle the logic for the application
+# Ensure to import necessary modules from Django and boto3.
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required, user_passes_test

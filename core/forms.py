@@ -1,3 +1,8 @@
+//contains forms for user registration, client creation, and video upload
+# core/forms.py
+# This file contains forms for user registration, client creation, and video upload
+# It uses Django's built-in forms and custom forms for specific models.
+# Ensure to import necessary models and forms from Django.
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, Client, Video
