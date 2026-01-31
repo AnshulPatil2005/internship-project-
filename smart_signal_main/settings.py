@@ -1,13 +1,19 @@
 # smart_signal_main/settings.py
-# This file contains the settings for the Django application.   
+# This file contains the settings for the Django application.
 from pathlib import Path
 import os
+import dj_database_url
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-demo-key'
-DEBUG = True
-ALLOWED_HOSTS = []
+# Security settings - use environment variables in production
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-demo-key-change-in-production')
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -49,11 +55,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'smart_signal_main.wsgi.application'
 
+# Database configuration
+# Uses DATABASE_URL from environment if available (for Neon/PostgreSQL)
+# Falls back to SQLite for local development
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}'
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = []
@@ -80,5 +88,6 @@ LOGOUT_REDIRECT_URL = '/login/'
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    "C:/Users/kachh/OneDrive/Desktop/PROJECTS/Projects/intern/static",
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'core', 'static'),
 ]
