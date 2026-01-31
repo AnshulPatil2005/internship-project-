@@ -1,160 +1,78 @@
-{% extends "base.html" %}
 {% load static %}
-{% block title %}Video List{% endblock %}
-{% block content %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8" />
-  <title>Login</title>
+  <title>Login - Smart Signal System</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    :root {
-      --bg-color: #ecf0f1;
-      --card-bg: #ffffff;
-      --text-color: #2c3e50;
-      --input-bg: #ffffff;
-      --input-border: #ccc;
-      --button-bg: #2c3e50;
-      --button-hover: #1a252f;
-    }
-
-    body.dark {
-      --bg-color: #121212;
-      --card-bg: #1e1e1e;
-      --text-color: #f0f0f0;
-      --input-bg: #2a2a2a;
-      --input-border: #444;
-      --button-bg: #007bff;
-      --button-hover: #0056b3;
-    }
-
-    body {
-      background-color: var(--bg-color);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      font-family: Arial, sans-serif;
-      transition: background-color 0.3s ease;
-    }
-
-    .login-container {
-      background-color: var(--card-bg);
-      padding: 30px 40px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-      color: var(--text-color);
-      transition: background-color 0.3s ease, color 0.3s ease;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: var(--text-color);
-    }
-
-    form p {
-      margin-bottom: 15px;
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: 1px solid var(--input-border);
-      background-color: var(--input-bg);
-      color: var(--text-color);
-      transition: background-color 0.3s ease, border-color 0.3s ease;
-    }
-
-    button {
-      width: 100%;
-      background-color: var(--button-bg);
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    button:hover {
-      background-color: var(--button-hover);
-    }
-
-    .errorlist {
-      color: red;
-      font-size: 14px;
-    }
-
-    .mode-toggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-    }
-
-    .mode-toggle button {
-      padding: 6px 12px;
-      border: 2px solid var(--button-bg);
-      background-color: transparent;
-      color: var(--button-bg);
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-    .mode-toggle button:hover {
-      background-color: var(--button-bg);
-      color: white;
-    }
-
-    @media (max-width: 500px) {
-      .login-container {
-        padding: 25px 20px;
-      }
-
-      .mode-toggle {
-        position: static;
-        margin-bottom: 15px;
-        display: flex;
-        justify-content: center;
-      }
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
 </head>
-<body>
-  <!-- <div class="mode-toggle">
-    <button onclick="toggleMode()">🌗 Toggle Mode</button>
-  </div> -->
+<body class="h-full bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+  <div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <!-- Logo & Header -->
+      <div class="text-center">
+        <div class="flex justify-center mb-4">
+          <div class="flex gap-2 bg-gray-800/50 backdrop-blur-sm p-4 rounded-2xl">
+            <div class="w-5 h-5 rounded-full bg-red-500 animate-pulse"></div>
+            <div class="w-5 h-5 rounded-full bg-yellow-400 animate-pulse" style="animation-delay: 0.3s"></div>
+            <div class="w-5 h-5 rounded-full bg-green-500 animate-pulse" style="animation-delay: 0.6s"></div>
+          </div>
+        </div>
+        <h2 class="text-3xl font-extrabold text-white">Smart Signal System</h2>
+        <p class="mt-2 text-sm text-gray-300">Sign in to your account</p>
+      </div>
 
-  <div class="login-container">
-    <h2>Login</h2>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">Login</button>
-    </form>
+      <!-- Login Form -->
+      <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
+        <form method="post" class="space-y-6">
+          {% csrf_token %}
+
+          {% if form.errors %}
+          <div class="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm">
+            <p>Invalid username or password. Please try again.</p>
+          </div>
+          {% endif %}
+
+          <div>
+            <label for="id_username" class="block text-sm font-medium text-gray-200 mb-2">Username</label>
+            <input type="text" name="username" id="id_username" required autofocus
+              class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              placeholder="Enter your username">
+          </div>
+
+          <div>
+            <label for="id_password" class="block text-sm font-medium text-gray-200 mb-2">Password</label>
+            <input type="password" name="password" id="id_password" required
+              class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              placeholder="Enter your password">
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded bg-white/10">
+              <label for="remember-me" class="ml-2 block text-sm text-gray-300">Remember me</label>
+            </div>
+          </div>
+
+          <button type="submit"
+            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition transform hover:scale-[1.02]">
+            Sign in
+          </button>
+        </form>
+
+        <div class="mt-6 text-center">
+          <p class="text-sm text-gray-300">
+            Don't have an account?
+            <a href="{% url 'register' %}" class="font-medium text-blue-400 hover:text-blue-300 transition">Register here</a>
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <script>
-    function toggleMode() {
-      document.body.classList.toggle("dark");
-      localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
-    }
-
-    window.onload = () => {
-      if (localStorage.getItem("theme") === "dark") {
-        document.body.classList.add("dark");
-      }
-    };
-  </script>
-</body>
+  </body>
 </html>
-{% endblock %}

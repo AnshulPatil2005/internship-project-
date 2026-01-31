@@ -1,192 +1,108 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Smart Signal Map{% endblock %}
+
+{% block title %}Map View - Smart Signal System{% endblock %}
+{% block breadcrumb %}Map{% endblock %}
+
 {% block content %}
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Traffic Signal Map</h1>
+  <p class="text-gray-600 dark:text-gray-400 mt-1">View signal locations on the map</p>
+</div>
 
-<style>
-  :root {
-    --bg-color: #f4f6f8;
-    --card-bg: #ffffff;
-    --text-color: #2c3e50;
-    --form-bg: #ffffff;
-    --input-border: #ccc;
-    --button-bg: #007bff;
-    --button-hover: #0056b3;
-  }
-
-  body.dark {
-    --bg-color: #121212;
-    --card-bg: #1e1e1e;
-    --text-color: #e0e0e0;
-    --form-bg: #2a2a2a;
-    --input-border: #444;
-    --button-bg: #1a73e8;
-    --button-hover: #1558b0;
-  }
-
-  body {
-    background-color: var(--bg-color);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: var(--text-color);
-    margin: 0;
-    padding: 0;
-  }
-
-  .map-container {
-    width: 100%;
-    padding: 40px 50px;
-    background-color: var(--bg-color);
-    box-sizing: border-box;
-  }
-
-  .map-box {
-    background: var(--card-bg);
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    padding: 40px;
-    max-width: 100%;
-    margin: auto;
-  }
-
-  .map-container h2 {
-    text-align: center;
-    color: var(--button-bg);
-    margin-bottom: 30px;
-    font-size: 28px;
-  }
-
-  form {
-    text-align: center;
-    margin-bottom: 25px;
-  }
-
-  label {
-    font-weight: bold;
-    margin-right: 10px;
-    font-size: 16px;
-  }
-
-  select {
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid var(--input-border);
-    margin-right: 10px;
-    background-color: var(--form-bg);
-    color: var(--text-color);
-    font-size: 15px;
-  }
-
-  button {
-    padding: 10px 18px;
-    background-color: var(--button-bg);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 15px;
-    cursor: pointer;
-  }
-
-  button:hover {
-    background-color: var(--button-hover);
-  }
-
-  .map-label {
-    text-align: center;
-    font-size: 20px;
-    margin-top: 25px;
-    color: var(--text-color);
-  }
-
-  .map-wrapper {
-    position: relative;
-    margin: 40px auto 0;
-    width: 100%;
-    max-width: 100%;
-    border-radius: 10px;
-    border: 1px solid var(--input-border);
-    overflow: hidden;
-  }
-
-  .map-image {
-    width: 100%;
-    max-height: 800px;
-    object-fit: contain;
-    display: block;
-    border-radius: 10px;
-    filter: brightness(0.85) contrast(1.1);
-  }
-
-  body.dark .map-image {
-    filter: brightness(0.6) contrast(1.2) grayscale(0.2);
-  }
-
-  .map-marker {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    cursor: pointer;
-  }
-
-  .map-marker img {
-    width: 24px;
-    height: 24px;
-  }
-
-  @media (max-width: 768px) {
-    .map-box {
-      padding: 20px;
-    }
-
-    .map-image {
-      max-height: 500px;
-    }
-  }
-</style>
-
-<div class="map-container">
-  <div class="map-box">
-    <h2>Smart Signal Traffic System</h2>
-
-    <form method="get" action="{% url 'show_map' %}">
-      <label for="client_map">Choose Client Map:</label>
-      <select name="client_map" id="client_map" required>
+<!-- Map Selection -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+  <form method="get" action="{% url 'show_map' %}" class="flex flex-col sm:flex-row sm:items-end gap-4">
+    <div class="flex-1">
+      <label for="client_map" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Client Map</label>
+      <select name="client_map" id="client_map" required
+        class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
         <option value="">-- Select Map --</option>
-        <option value="gpds_map.png" {% if selected_map == "gpds_map.png" %}selected{% endif %}>gpds_map.png</option>
-        <option value="ecube_map.png" {% if selected_map == "ecube_map.png" %}selected{% endif %}>ecube_map.png</option>
+        <option value="gpds_map.png" {% if selected_map == "gpds_map.png" %}selected{% endif %}>GPDS Map</option>
+        <option value="ecube_map.png" {% if selected_map == "ecube_map.png" %}selected{% endif %}>ECube Map</option>
       </select>
-      <button type="submit">Show Map</button>
-    </form>
+    </div>
+    <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition font-medium flex items-center justify-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+      </svg>
+      Show Map
+    </button>
+  </form>
+</div>
 
-    {% if selected_map %}
-      <div class="map-label">Map for: <strong>{{ selected_map }}</strong></div>
-      <div class="map-wrapper">
-        <img src="{% static 'images/maps/'|add:selected_map %}" alt="Map Image" class="map-image">
-
-        {% if selected_map == "ecube_map.png" %}
-          <!-- Marker for Mumbai -->
-          <a href="https://maps.app.goo.gl/KFkTnV6mkGUNJuFH8" class="map-marker" style="top: 50%; left: 58%;" title="Client 1 – Mumbai">
-            <img src="{% static 'images/icons/signal.svg' %}" alt="Signal Marker">
-          </a>
-
-        {% elif selected_map == "gpds_map.png" %}
-          <!-- Marker for Pune -->
-          <a href="https://maps.app.goo.gl/SHrAM1CPuYA19zE89" class="map-marker" style="top: 50%; left: 65%;" title="Client 2 – Pune">
-            <img src="{% static 'images/icons/signal.svg' %}" alt="Signal Marker">
-          </a>
-        {% endif %}
+<!-- Map Display -->
+{% if selected_map %}
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+  <!-- Map Header -->
+  <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ selected_map|cut:".png"|upper }}</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Click on markers to view location details</p>
       </div>
+      <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+        <span class="flex items-center gap-1">
+          <span class="w-3 h-3 rounded-full bg-green-500"></span>
+          Active Signal
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Map Container -->
+  <div class="relative">
+    <img src="{% static 'images/maps/'|add:selected_map %}" alt="Map Image"
+      class="w-full max-h-[600px] object-contain dark:brightness-75 dark:contrast-110">
+
+    {% if selected_map == "ecube_map.png" %}
+    <!-- Marker for Mumbai -->
+    <a href="https://maps.app.goo.gl/KFkTnV6mkGUNJuFH8" target="_blank"
+      class="absolute transform -translate-x-1/2 -translate-y-1/2 group"
+      style="top: 50%; left: 58%;">
+      <div class="relative">
+        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-lg ring-4 ring-green-500/30 animate-pulse">
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
+          Client 1 - Mumbai
+          <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+        </div>
+      </div>
+    </a>
+
+    {% elif selected_map == "gpds_map.png" %}
+    <!-- Marker for Pune -->
+    <a href="https://maps.app.goo.gl/SHrAM1CPuYA19zE89" target="_blank"
+      class="absolute transform -translate-x-1/2 -translate-y-1/2 group"
+      style="top: 50%; left: 65%;">
+      <div class="relative">
+        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-lg ring-4 ring-green-500/30 animate-pulse">
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
+          Client 2 - Pune
+          <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+        </div>
+      </div>
+    </a>
     {% endif %}
   </div>
 </div>
 
-<script>
-  // Ensure dark mode is applied on load from localStorage
-  window.onload = () => {
-    const theme = localStorage.getItem("theme");
-    if (theme === "dark") {
-      document.body.classList.add("dark");
-    }
-  };
-</script>
-
+{% else %}
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
+  <div class="w-16 h-16 mx-auto mb-4 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+    <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+    </svg>
+  </div>
+  <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Select a map to view</h3>
+  <p class="text-gray-500 dark:text-gray-400">Choose a client map from the dropdown above to view signal locations.</p>
+</div>
+{% endif %}
 {% endblock %}

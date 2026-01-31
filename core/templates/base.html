@@ -1,263 +1,258 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <title>{% block title %}Smart Signal System{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3b82f6',
+            'primary-dark': '#2563eb',
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    :root {
-      --bg: #f4f6f8;
-      --fg: #222;
-      --accent: #007bff;
-      --accent-hover: #0056b3;
-      --dark-bg: #121212;
-      --dark-fg: #f0f0f0;
-      --container: rgba(255, 255, 255, 0.9);
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: var(--bg);
-      color: var(--fg);
-      padding-left: 240px;
-      transition: background 0.3s ease;
-    }
-
-    body.dark {
-      --bg: var(--dark-bg);
-      --fg: var(--dark-fg);
-      --container: rgba(30, 30, 30, 0.92);
-      --accent: #1a73e8;
-      --accent-hover: #135abe;
-    }
-
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 240px;
-      height: 100%;
-      background: #222;
-      color: white;
-      padding-top: 15px;
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .sidebar input {
-      width: 80%;
-      margin: 10px auto;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #999;
-      display: block;
-    }
-
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .sidebar a {
-      display: block;
-      padding: 12px 20px;
-      text-decoration: none;
-      color: white;
-      transition: background 0.2s;
-    }
-
-    .sidebar a:hover,
-    .sidebar a.active {
-      background: var(--accent);
-    }
-
-    .traffic-light {
-      width: 50px;
-      margin: 0 auto 20px;
-      background: #111;
-      padding: 10px;
-      border-radius: 12px;
-    }
-
-    .traffic-light .light {
-      width: 30px;
-      height: 30px;
-      margin: 10px auto;
-      border-radius: 50%;
-      opacity: 0.4;
-      transition: opacity 0.3s ease;
-    }
-
-    .traffic-light .red { background: red; }
-    .traffic-light .yellow { background: gold; }
-    .traffic-light .green { background: #00cc44; }
-
-    .container {
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 30px;
-      background: var(--container);
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-    }
-
-    .breadcrumb {
-      font-size: 0.9rem;
-      color: #888;
-      margin-bottom: 20px;
-    }
-
-    .mode-toggle {
-      position: fixed;
-      top: 15px;
-      right: 20px;
-      z-index: 100;
-    }
-
-    .mode-toggle button,
-    .back-top {
-      background: none;
-      border: 2px solid var(--accent);
-      color: var(--accent);
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .mode-toggle button:hover,
-    .back-top:hover {
-      background: var(--accent);
-      color: white;
-    }
-
-    .back-top {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      z-index: 100;
-    }
-
-    #toast {
-      display: none;
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background: var(--accent);
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      z-index: 999;
-    }
-
-    #loader {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(255, 255, 255, 0.6);
-      z-index: 1000;
-    }
-
-    #loader div {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-weight: bold;
-      font-size: 18px;
-    }
-
-    @media (max-width: 768px) {
-      body { padding-left: 0; }
-      .sidebar { width: 100%; position: static; display: flex; flex-wrap: wrap; }
-      .sidebar a { flex: 1 0 45%; text-align: center; }
-    }
+    /* Traffic light animation */
+    .traffic-light .light { opacity: 0.3; transition: opacity 0.3s; }
+    .traffic-light .light.active { opacity: 1; }
   </style>
 </head>
-<body>
-  <!-- 🌗 Toggle Button -->
-  <div class="mode-toggle">
-    <button onclick="toggleMode()">🌙 Dark Mode</button>
+<body class="h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+  <!-- Mobile Menu Button -->
+  <div class="lg:hidden fixed top-4 left-4 z-50">
+    <button id="menuBtn" class="p-2 rounded-lg bg-gray-800 text-white shadow-lg hover:bg-gray-700 transition">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path id="menuIcon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
   </div>
 
-  <!-- 🚦 Sidebar with Signal -->
-  <div class="sidebar">
-    <div class="traffic-light">
-      <div class="light red"></div>
-      <div class="light yellow"></div>
-      <div class="light green"></div>
+  <!-- Dark Mode Toggle -->
+  <div class="fixed top-4 right-4 z-50">
+    <button id="themeToggle" class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+      <svg id="sunIcon" class="w-6 h-6 text-yellow-500 hidden" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
+      </svg>
+      <svg id="moonIcon" class="w-6 h-6 text-gray-700 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-gray-900 dark:bg-gray-950 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+    <div class="flex flex-col h-full">
+      <!-- Logo & Traffic Light -->
+      <div class="p-6 border-b border-gray-800">
+        <div class="flex items-center justify-center mb-4">
+          <div class="traffic-light flex gap-2 bg-gray-800 p-3 rounded-xl">
+            <div class="light w-4 h-4 rounded-full bg-red-500"></div>
+            <div class="light w-4 h-4 rounded-full bg-yellow-400"></div>
+            <div class="light w-4 h-4 rounded-full bg-green-500"></div>
+          </div>
+        </div>
+        <h1 class="text-xl font-bold text-white text-center">Smart Signal</h1>
+        <p class="text-gray-400 text-sm text-center">Traffic Management</p>
+      </div>
+
+      <!-- Search -->
+      <div class="p-4">
+        <input type="text" id="sidebarSearch" placeholder="Search..."
+          class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex-1 px-4 pb-4 overflow-y-auto">
+        <ul class="space-y-1">
+          <li>
+            <a href="{% url 'home' %}" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition {% if request.path == '/' %}bg-blue-600 text-white{% endif %}">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'list_clients' %}" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition {% if 'clients' in request.path %}bg-blue-600 text-white{% endif %}">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              Clients
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'add_client' %}" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition {% if 'add-client' in request.path %}bg-blue-600 text-white{% endif %}">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+              Add Client
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'show_signals' %}" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition {% if 'signals' in request.path %}bg-blue-600 text-white{% endif %}">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+              Signals
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'list_videos' %}" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition {% if 'videos' in request.path and 'upload' not in request.path %}bg-blue-600 text-white{% endif %}">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              Videos
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'upload_video' %}" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition {% if 'upload' in request.path %}bg-blue-600 text-white{% endif %}">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+              Upload Video
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'show_map' %}" class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition {% if 'map' in request.path %}bg-blue-600 text-white{% endif %}">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+              View Map
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- User Section -->
+      <div class="p-4 border-t border-gray-800">
+        {% if user.is_authenticated %}
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+            {{ user.username|slice:":1"|upper }}
+          </div>
+          <div>
+            <p class="text-white font-medium">{{ user.username }}</p>
+            <p class="text-gray-400 text-sm">{{ user.email|default:"User" }}</p>
+          </div>
+        </div>
+        <form method="post" action="{% url 'logout' %}" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-gray-800 rounded-lg transition w-full">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            Logout
+          </button>
+        </form>
+        {% else %}
+        <a href="{% url 'login' %}" class="flex items-center gap-2 px-4 py-2 text-blue-400 hover:bg-gray-800 rounded-lg transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+          Login
+        </a>
+        {% endif %}
+      </div>
     </div>
+  </aside>
 
-    <input type="text" placeholder="Search..." onkeyup="filterSidebar(this)" />
-    <ul>
-      <li><a href="{% url 'add_client' %}" class="{% if request.path == '/add-client/' %}active{% endif %}">➕ Add Client</a></li>
-      <li><a href="{% url 'list_clients' %}">📋 Clients</a></li>
-      <li><a href="{% url 'register' %}">🧾 Register User</a></li>
-      <li><a href="{% url 'show_signals' %}">🚦 Signals</a></li>
-      <li><a href="{% url 'upload_video' %}">📤 Upload Video</a></li>
-      <li><a href="{% url 'show_map' %}">🗺️ View Map</a></li>
-      <li><a href="{% url 'list_videos' %}">🎥 All Videos</a></li>
-    </ul>
-  </div>
+  <!-- Overlay for mobile -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
 
-  <!-- 📦 Main Content -->
-  <div class="container">
-    <div class="breadcrumb">
-      <a href="/">🏠 Home</a> / {% block breadcrumb %}Dashboard{% endblock %}
+  <!-- Main Content -->
+  <main class="lg:ml-64 min-h-screen">
+    <div class="p-4 pt-16 lg:pt-4">
+      <!-- Breadcrumb -->
+      <nav class="mb-6">
+        <ol class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+          <li>
+            <a href="{% url 'home' %}" class="hover:text-blue-600 dark:hover:text-blue-400 transition">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+            </a>
+          </li>
+          <li><span>/</span></li>
+          <li class="text-gray-900 dark:text-gray-100 font-medium">{% block breadcrumb %}Dashboard{% endblock %}</li>
+        </ol>
+      </nav>
+
+      <!-- Page Content -->
+      <div class="max-w-7xl mx-auto">
+        {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for message in messages %}
+          <div class="p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200{% elif message.tags == 'error' %}bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200{% else %}bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200{% endif %}">
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </div>
     </div>
-    {% block content %}{% endblock %}
-  </div>
+  </main>
 
-  <!-- ⬆️ Scroll + Toast + Loader -->
-  <button class="back-top" onclick="scrollToTop()">↑</button>
-  <div id="toast">Success!</div>
-  <div id="loader"><div>⏳ Loading...</div></div>
+  <!-- Back to Top Button -->
+  <button id="backToTop" class="fixed bottom-6 right-6 p-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition opacity-0 invisible">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+  </button>
 
   <script>
-    function toggleMode() {
-      const body = document.body;
-      const toggle = document.querySelector('.mode-toggle button');
-      body.classList.toggle('dark');
-      const isDark = body.classList.contains('dark');
-      toggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    // Theme Toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const sunIcon = document.getElementById('sunIcon');
+    const moonIcon = document.getElementById('moonIcon');
+
+    function setTheme(dark) {
+      document.documentElement.classList.toggle('dark', dark);
+      sunIcon.classList.toggle('hidden', !dark);
+      moonIcon.classList.toggle('hidden', dark);
+      localStorage.setItem('theme', dark ? 'dark' : 'light');
     }
 
-    function scrollToTop() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    themeToggle.addEventListener('click', () => {
+      setTheme(!document.documentElement.classList.contains('dark'));
+    });
+
+    // Load saved theme
+    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      setTheme(true);
     }
 
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.style.display = 'block';
-      setTimeout(() => toast.style.display = 'none', 3000);
+    // Mobile Menu
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    function toggleMenu() {
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
     }
 
-    function filterSidebar(input) {
-      const value = input.value.toLowerCase();
-      document.querySelectorAll('.sidebar a').forEach(a => {
-        a.style.display = a.textContent.toLowerCase().includes(value) ? '' : 'none';
+    menuBtn.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
+
+    // Sidebar Search
+    document.getElementById('sidebarSearch').addEventListener('input', function(e) {
+      const query = e.target.value.toLowerCase();
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.style.display = link.textContent.toLowerCase().includes(query) ? '' : 'none';
       });
-    }
+    });
 
-    // 🌈 Animated Signal Light
-    (function cycleTrafficLight() {
+    // Back to Top
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTop.classList.remove('opacity-0', 'invisible');
+        backToTop.classList.add('opacity-100', 'visible');
+      } else {
+        backToTop.classList.add('opacity-0', 'invisible');
+        backToTop.classList.remove('opacity-100', 'visible');
+      }
+    });
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // Traffic Light Animation
+    (function() {
       const lights = document.querySelectorAll('.traffic-light .light');
       let index = 0;
       setInterval(() => {
-        lights.forEach((l, i) => l.style.opacity = i === index ? '1' : '0.4');
+        lights.forEach((l, i) => l.classList.toggle('active', i === index));
         index = (index + 1) % 3;
       }, 1000);
     })();
-
-    window.onload = () => {
-      if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.add('dark');
-        document.querySelector('.mode-toggle button').textContent = '☀️ Light Mode';
-      }
-    };
   </script>
 </body>
 </html>

@@ -1,156 +1,69 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}All Signals{% endblock %}
+
+{% block title %}Signals - Smart Signal System{% endblock %}
+{% block breadcrumb %}Signals{% endblock %}
+
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>All Signals</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    :root {
-      --bg-color: #f4f6f8;
-      --card-bg: #ffffff;
-      --text-color: #2c3e50;
-      --list-text: #555;
-      --header-color: #007bff;
-      --header-hover: #0056b3;
-    }
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900 dark:text-white">All Signals</h1>
+  <p class="text-gray-600 dark:text-gray-400 mt-1">View signal data from all client S3 buckets</p>
+</div>
 
-    body.dark {
-      --bg-color: #121212;
-      --card-bg: #1e1e1e;
-      --text-color: #f0f0f0;
-      --list-text: #cccccc;
-      --header-color: #3399ff;
-      --header-hover: #227acc;
-    }
+{% if client_data %}
+<div class="grid gap-6">
+  {% for entry in client_data %}
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <!-- Client Header -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 px-6 py-4">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+          <span class="text-xl font-bold text-white">{{ entry.client.company_name|slice:":1"|upper }}</span>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-white">{{ entry.client.company_name }}</h3>
+          <p class="text-blue-100 text-sm">{{ entry.files|length }} file{% if entry.files|length != 1 %}s{% endif %} found</p>
+        </div>
+      </div>
+    </div>
 
-    body {
-      background-color: var(--bg-color);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 40px 20px;
-      color: var(--text-color);
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background-color: var(--card-bg);
-      padding: 30px 40px;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-      transition: background-color 0.3s ease;
-    }
-
-    h1 {
-      text-align: center;
-      color: var(--header-color);
-      margin-bottom: 30px;
-    }
-
-    h3 {
-      margin-top: 30px;
-      color: var(--text-color);
-    }
-
-    ul {
-      list-style-type: disc;
-      padding-left: 30px;
-      margin-top: 10px;
-    }
-
-    li {
-      padding: 5px 0;
-      color: var(--list-text);
-    }
-
-    .home-link {
-      display: inline-block;
-      margin-top: 40px;
-      padding: 10px 20px;
-      background-color: var(--header-color);
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: 600;
-      transition: background-color 0.2s ease;
-    }
-
-    .home-link:hover {
-      background-color: var(--header-hover);
-    }
-
-    .mode-toggle {
-      display: flex;
-      justify-content: flex-end;
-      max-width: 900px;
-      margin: 0 auto 10px;
-    }
-
-    .mode-toggle button {
-      padding: 6px 12px;
-      border: 2px solid var(--header-color);
-      background-color: transparent;
-      color: var(--header-color);
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-    .mode-toggle button:hover {
-      background-color: var(--header-color);
-      color: white;
-    }
-
-    @media (max-width: 600px) {
-      .container {
-        padding: 25px 20px;
-      }
-
-      .mode-toggle {
-        justify-content: center;
-      }
-    }
-  </style>
-</head>
-<body>
-  <!-- <div class="mode-toggle">
-    <button onclick="toggleMode()">🌗 Toggle Mode</button>
-  </div> -->
-
-  <div class="container">
-    <h1>All Clients and Their Signals</h1>
-
-    {% for entry in client_data %}
-      <h3>{{ entry.client.company_name }}</h3>
-      <ul>
+    <!-- Files List -->
+    <div class="p-6">
+      {% if entry.files %}
+      <ul class="space-y-2">
         {% for file in entry.files %}
-          <li>{{ file }}</li>
+        <li class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+          {% if 'No S3 bucket' in file or 'AWS Error' in file %}
+          <svg class="w-5 h-5 text-yellow-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <span class="text-yellow-600 dark:text-yellow-400">{{ file }}</span>
+          {% else %}
+          <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <span class="text-gray-700 dark:text-gray-300">{{ file }}</span>
+          {% endif %}
+        </li>
         {% endfor %}
       </ul>
-    {% endfor %}
-
-    <a href="{% url 'home' %}" class="home-link">← Back to Home</a>
+      {% else %}
+      <p class="text-gray-500 dark:text-gray-400 text-center py-4">No files available</p>
+      {% endif %}
+    </div>
   </div>
+  {% endfor %}
+</div>
 
-  <script>
-    function toggleMode() {
-      document.body.classList.toggle("dark");
-      localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
-    }
-
-    window.onload = () => {
-      if (localStorage.getItem("theme") === "dark") {
-        document.body.classList.add("dark");
-      }
-    };
-  </script>
-</body>
-</html>
+{% else %}
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
+  <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+    </svg>
+  </div>
+  <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No signal data</h3>
+  <p class="text-gray-500 dark:text-gray-400">No clients or signal data available at this time.</p>
+</div>
+{% endif %}
 {% endblock %}
-<!-- Compare this snippet from intern/core/templates/core/show_signals.html: -->

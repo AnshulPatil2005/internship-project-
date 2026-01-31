@@ -62,10 +62,13 @@ class AdminUploadVideoForm(forms.ModelForm):
 class VideoFilterForm(forms.Form):
     client = forms.ModelChoiceField(queryset=Client.objects.all(), required=True)
     site_name = forms.CharField(max_length=255, required=True)
-from django import forms
-from .models import Video
+
+
+# ------------------------
+# Video Upload Form
+# ------------------------
 
 class VideoUploadForm(forms.ModelForm):
     class Meta:
         model = Video
-        fields = ['client', 'site', 'video']  # Ensure these fields exist
+        fields = ['client', 'site', 'video']

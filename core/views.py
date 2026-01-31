@@ -45,6 +45,7 @@ def home(request):
 
 
 # Client Management
+@login_required
 @transaction.atomic
 def add_client(request):
     if request.method == 'POST':
@@ -147,25 +148,39 @@ def list_videos(request):
     return render(request, 'core/list_videos.html', {'form': form, 'videos': videos})
 
 # AWS S3: Show all signals
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+import re
 import boto3
 import botocore.exceptions
-import re
-from django.conf import settings
-from core.models import Client
 
 @login_required
 def show_all_signals(request):
+    client_data = []
+    clients = Client.objects.all()
+
+    # Check if AWS credentials are configured
+    aws_configured = (
+        hasattr(settings, 'AWS_ACCESS_KEY_ID') and
+        hasattr(settings, 'AWS_SECRET_ACCESS_KEY') and
+        settings.AWS_ACCESS_KEY_ID and
+        settings.AWS_SECRET_ACCESS_KEY
+    )
+
+    if not aws_configured:
+        # AWS not configured - show placeholder data
+        for client in clients:
+            client_data.append({
+                'client': client,
+                'files': ['AWS credentials not configured - S3 integration disabled']
+            })
+        return render(request, 'core/show_signals.html', {'client_data': client_data})
+
+    # AWS is configured - proceed with S3 operations
     s3 = boto3.client(
         's3',
         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-        region_name=settings.AWS_REGION_NAME
+        region_name=getattr(settings, 'AWS_REGION_NAME', 'us-east-1')
     )
-
-    client_data = []
-    clients = Client.objects.all()
 
     for client in clients:
         bucket_name = re.sub(r'[^a-z0-9-]', '-', client.company_name.lower().strip().replace(' ', '-'))

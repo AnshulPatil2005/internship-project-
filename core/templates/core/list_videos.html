@@ -1,204 +1,114 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Video List{% endblock %}
+
+{% block title %}Videos - Smart Signal System{% endblock %}
+{% block breadcrumb %}Videos{% endblock %}
+
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Video List</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    :root {
-      --bg-color: #f4f6f8;
-      --container-bg: #ffffff;
-      --card-bg: #f9f9f9;
-      --text-color: #333;
-      --input-bg: #fff;
-      --input-border: #ccc;
-      --primary-color: #007bff;
-      --primary-hover: #0056b3;
-      --muted-text: #777;
-    }
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Client Videos</h1>
+    <p class="text-gray-600 dark:text-gray-400 mt-1">Filter and view uploaded videos by client</p>
+  </div>
+  <a href="{% url 'upload_video' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+    </svg>
+    Upload Video
+  </a>
+</div>
 
-    body.dark {
-      --bg-color: #121212;
-      --container-bg: #1f1f1f;
-      --card-bg: #2a2a2a;
-      --text-color: #f0f0f0;
-      --input-bg: #333;
-      --input-border: #555;
-      --primary-color: #3399ff;
-      --primary-hover: #227acc;
-      --muted-text: #aaa;
-    }
+<!-- Filter Form -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+  <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Filter Videos</h2>
+  <form method="post" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    {% csrf_token %}
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      margin: 0;
-      padding: 30px;
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: var(--container-bg);
-      padding: 30px 40px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-      transition: background-color 0.3s;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    form {
-      margin-bottom: 30px;
-    }
-
-    label {
-      font-weight: 600;
-      margin-right: 10px;
-    }
-
-    input, select {
-      padding: 8px;
-      margin-right: 15px;
-      border: 1px solid var(--input-border);
-      border-radius: 6px;
-      background-color: var(--input-bg);
-      color: var(--text-color);
-      transition: border-color 0.3s, background-color 0.3s;
-    }
-
-    button {
-      background-color: var(--primary-color);
-      color: white;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    button:hover {
-      background-color: var(--primary-hover);
-    }
-
-    .video-list {
-      margin-top: 20px;
-    }
-
-    .video-card {
-      background: var(--card-bg);
-      padding: 15px 20px;
-      margin-bottom: 12px;
-      border-left: 5px solid var(--primary-color);
-      border-radius: 6px;
-      transition: background-color 0.3s;
-    }
-
-    .video-card p {
-      margin: 5px 0;
-    }
-
-    .no-videos {
-      text-align: center;
-      color: var(--muted-text);
-      margin-top: 20px;
-    }
-
-    .mode-toggle {
-      display: flex;
-      justify-content: flex-end;
-      max-width: 900px;
-      margin: 10px auto 0;
-      padding: 0 10px;
-    }
-
-    .mode-toggle button {
-      padding: 6px 12px;
-      font-weight: 600;
-      background-color: transparent;
-      color: var(--primary-color);
-      border: 2px solid var(--primary-color);
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    .mode-toggle button:hover {
-      background-color: var(--primary-color);
-      color: white;
-    }
-
-    @media (max-width: 600px) {
-      .container {
-        padding: 20px;
-      }
-
-      form {
-        display: flex;
-        flex-direction: column;
-      }
-
-      input, select, button {
-        margin-bottom: 10px;
-        width: 100%;
-      }
-
-      .mode-toggle {
-        justify-content: center;
-      }
-    }
-  </style>
-</head>
-<body>
-  <!-- <div class="mode-toggle">
-    <button onclick="toggleMode()">🌙 Toggle Mode</button>
-  </div> -->
-
-  <div class="container">
-    <h1>Client Video List</h1>
-
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">Filter</button>
-    </form>
-
-    <div class="video-list">
-      {% if videos %}
-        {% for video in videos %}
-          <div class="video-card">
-            <p><strong>Client:</strong> {{ video.client.company_name }}</p>
-            <p><strong>Site:</strong> {{ video.site_name }}</p>
-            <p><strong>File:</strong> <a href="{{ video.video.url }}" style="color: var(--primary-color);" target="_blank">{{ video.video.url }}</a></p>
-          </div>
+    <div>
+      <label for="id_client" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Client</label>
+      <select name="client" id="id_client" required
+        class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+        <option value="">Select a client</option>
+        {% for client in form.client.field.queryset %}
+        <option value="{{ client.id }}" {% if form.client.value|stringformat:"s" == client.id|stringformat:"s" %}selected{% endif %}>{{ client.company_name }}</option>
         {% endfor %}
-      {% else %}
-        <p class="no-videos">No videos found for the selected filters.</p>
-      {% endif %}
+      </select>
+    </div>
+
+    <div>
+      <label for="id_site_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Site Name</label>
+      <input type="text" name="site_name" id="id_site_name" required
+        value="{{ form.site_name.value|default:'' }}"
+        class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+        placeholder="Enter site name">
+    </div>
+
+    <div class="flex items-end">
+      <button type="submit" class="w-full px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition font-medium flex items-center justify-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+        </svg>
+        Filter
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Video Results -->
+{% if videos %}
+<div class="grid gap-4">
+  {% for video in videos %}
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 hover:shadow-md transition">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+          <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ video.client.company_name }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Site: {{ video.site }}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="{{ video.video.url }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition font-medium">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Play Video
+        </a>
+      </div>
     </div>
   </div>
+  {% endfor %}
+</div>
 
-  <script>
-    function toggleMode() {
-      document.body.classList.toggle("dark");
-      localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
-    }
+<div class="mt-6 text-sm text-gray-500 dark:text-gray-400">
+  Showing {{ videos|length }} video{% if videos|length != 1 %}s{% endif %}
+</div>
 
-    window.onload = () => {
-      if (localStorage.getItem("theme") === "dark") {
-        document.body.classList.add("dark");
-      }
-    };
-  </script>
-</body>
-</html>
+{% elif request.method == 'POST' %}
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
+  <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+    </svg>
+  </div>
+  <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No videos found</h3>
+  <p class="text-gray-500 dark:text-gray-400">No videos match the selected filters. Try different criteria.</p>
+</div>
+
+{% else %}
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
+  <div class="w-16 h-16 mx-auto mb-4 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+    <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+    </svg>
+  </div>
+  <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Select filters to view videos</h3>
+  <p class="text-gray-500 dark:text-gray-400">Use the filter form above to search for videos by client and site.</p>
+</div>
+{% endif %}
 {% endblock %}
