@@ -8,9 +8,11 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import get_user_model
-from django.db import transaction, IntegrityError
+from django.db import transaction, IntegrityError, connection
+from django.views.decorators.http import require_GET
+from django.views.decorators.csrf import csrf_exempt
 import boto3
 
 from .forms import (
@@ -223,3 +225,33 @@ def dashboard_view(request):
         'alert_count': 0      # placeholder until Alert model exists
     }
     return render(request, 'home.html', context)
+
+
+# Health check endpoints for keep-alive pings
+# Prevents both Render and Neon free tier spindown
+
+@csrf_exempt
+@require_GET
+def ping(request):
+    """
+    Simple ping endpoint - keeps Render alive without DB overhead.
+    Use this if you only need to prevent Render spindown.
+    """
+    return JsonResponse({'status': 'ok'})
+
+
+@csrf_exempt
+@require_GET
+def health_check(request):
+    """
+    Full health check - keeps BOTH Render and Neon database alive.
+    Use with external uptime monitors (UptimeRobot, cron-job.org, etc.)
+    to ping every 5-10 minutes.
+    """
+    try:
+        # Execute a simple query to keep the database connection alive
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+        return JsonResponse({'status': 'ok', 'database': 'connected'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

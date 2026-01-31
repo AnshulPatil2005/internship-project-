@@ -23,6 +23,8 @@ urlpatterns = [
     path('upload-video/', views.upload_video, name='upload_video'),
     path('map/', views.show_map, name='show_map'),
     path('show-signals/', views.show_all_signals, name='show_signals'),
+    path('ping/', views.ping, name='ping'),  # Keep-alive for Render only
+    path('health/', views.health_check, name='health_check'),  # Keep-alive for Render + Neon
 ]
 
 if settings.DEBUG:

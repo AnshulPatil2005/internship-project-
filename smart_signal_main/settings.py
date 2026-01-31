@@ -60,7 +60,9 @@ WSGI_APPLICATION = 'smart_signal_main.wsgi.application'
 # Falls back to SQLite for local development
 DATABASES = {
     'default': dj_database_url.config(
-        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}'
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
+        conn_max_age=0,  # Close connections after each request (handles Neon spindown)
+        conn_health_checks=True,  # Check connection health before use (Django 4.1+)
     )
 }
 
