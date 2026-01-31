@@ -3,3 +3,5 @@ boto3
 psycopg2-binary
 dj-database-url
 python-dotenv
+gunicorn
+whitenoise
