@@ -1,4 +1,4 @@
-//contains forms for user registration, client creation, and video upload
+# contains forms for user registration, client creation, and video upload
 # core/forms.py
 # This file contains forms for user registration, client creation, and video upload
 # It uses Django's built-in forms and custom forms for specific models.

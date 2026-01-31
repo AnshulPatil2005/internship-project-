@@ -21,54 +21,123 @@ Smart Signal Traffic System is a web-based application designed to integrate wit
 
 ---
 
-##  Installation Guide
+## Installation Guide
 
 ### Prerequisites
-- Python 3.x
-- Virtualenv
-- Django
-- AWS CLI
-- Ubuntu-based system recommended
+- Python 3.9 or higher
+- pip (Python package manager)
+- Git
+- AWS CLI (optional, for S3 integration)
 
 ---
 
-##  Setup Instructions
+## Setup Instructions
 
-### 1. Create Virtual Environment
+### 1. Clone the Repository
 
 ```bash
-sudo apt update && sudo apt upgrade
-sudo apt install python3
-sudo apt install python3-pip
-pip3 install virtualenv
-virtualenv venv -p python3
+git clone https://github.com/your-username/smart-signal-traffic-system.git
+cd smart-signal-traffic-system
+```
+
+### 2. Create Virtual Environment
+
+#### On Windows (Command Prompt)
+```cmd
+python -m venv venv
+venv\Scripts\activate
+```
+
+#### On Windows (PowerShell)
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+
+#### On macOS/Linux
+```bash
+python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 2. Install Django
+### 3. Install Dependencies
 
 ```bash
-pip3 install django
-django-admin --version  # To confirm installation
+pip install django boto3
 ```
 
-### 3. Install AWS CLI
+Or if a `requirements.txt` file exists:
+```bash
+pip install -r requirements.txt
+```
 
-#### Option A: APT Package Manager
+### 4. Configure the Application
 
+1. Update the `STATICFILES_DIRS` in `smart_signal_main/settings.py` to point to your local static folder:
+   ```python
+   STATICFILES_DIRS = [
+       os.path.join(BASE_DIR, 'static'),
+   ]
+   ```
+
+2. (Optional) Configure AWS credentials for S3 integration by adding to `settings.py`:
+   ```python
+   AWS_ACCESS_KEY_ID = 'your-access-key'
+   AWS_SECRET_ACCESS_KEY = 'your-secret-key'
+   AWS_REGION_NAME = 'ap-south-1'
+   AWS_STORAGE_BUCKET_NAME = 'your-bucket-name'
+   ```
+
+### 5. Initialize the Database
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### 6. Create a Superuser (Admin Account)
+
+```bash
+python manage.py createsuperuser
+```
+
+Follow the prompts to set username, email, and password.
+
+### 7. Run the Development Server
+
+```bash
+python manage.py runserver
+```
+
+The application will be available at `http://127.0.0.1:8000/`
+
+---
+
+## AWS CLI Setup (Optional)
+
+If you plan to use AWS S3 for video storage:
+
+### Install AWS CLI
+
+#### On Windows
+Download and install from: https://aws.amazon.com/cli/
+
+#### On macOS
+```bash
+brew install awscli
+```
+
+#### On Linux (Ubuntu/Debian)
 ```bash
 sudo apt install awscli
-aws --version
 ```
 
-#### Option B: Python Pip
-
+Or via pip:
 ```bash
-pip3 install awscli --upgrade --user
-python3 -m awscli --version
+pip install awscli
 ```
 
-#### Configure AWS CLI
+### Configure AWS CLI
 
 ```bash
 aws configure
