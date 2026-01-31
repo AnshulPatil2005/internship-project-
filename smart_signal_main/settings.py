@@ -13,7 +13,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security settings - use environment variables in production
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-demo-key-change-in-production')
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+
+# Allowed hosts - includes Render hostname automatically
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,trefficsignal.onrender.com').split(',')
+RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -89,6 +94,8 @@ LOGOUT_REDIRECT_URL = '/login/'
 
 # CSRF trusted origins for Render deployment
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost,http://127.0.0.1').split(',')
+if RENDER_EXTERNAL_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
 
 # Static files configuration
 STATIC_URL = '/static/'
